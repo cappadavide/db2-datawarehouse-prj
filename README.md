@@ -41,3 +41,39 @@ The comparison queries with the previous month/year are as follows:
 4. Products with decreased sales compared to the previous year (month, year, family)
 
 Finally, it has been requested to evaluate the performance and execution times of queries with and without index usage, as well as to assess storage space.
+
+## Dimensional Fact Model
+
+Based on the provided data, there exists a distinct model centred around sales, with key metrics being the units sold (`UnitàVendute`) and a value indicating whether the sold item is on promotion or not (`InPromozione`).
+
+### Hierarchies Overview
+
+1. **Temporal Hierarchy:**
+   - Detailed characteristics related to time, differentiated by granularity. This hierarchy includes day, week, and month, extracted from the date. The attribute "tipo" has a descriptive attribute called "descrizione," indicating its description. Another enriching attribute, as seen in the following hierarchies, is "transferred." A holiday is labelled as "transferred" if it officially falls on a specific calendar day but has been moved to another date by the government. A "transferred" day is more akin to a regular day than a holiday. "Local_name" and "local" indicate the holiday's name and type (National, Local, Regional), respectively.
+
+2. **Product Hierarchy:**
+   - Encompasses product-related details, including the perishable attribute indicating whether the product is perishable, the family, and the class (`class`) to which the product belongs.
+
+3. **Store Hierarchy:**
+   - Specifies details related to a store, including the city and state, the store's cluster, and the descriptive attribute type.
+
+These three hierarchies provide a comprehensive view of the exclusive sales model, incorporating temporal, product-related, and store-specific dimensions.
+
+## Data Loading Process Overview
+As outlined in the requirements, data loading is mandated to occur on a semi-annual basis, totalling four semesters (two years). To achieve this, a separation process was implemented using the Python script `extractHalfYear`. This script takes input parameters such as the date to be segmented, the table, and the semester, generating the corresponding CSV file.
+Subsequently, the data from the CSV files about each semester needs to be loaded into the system. The `COPY` command was employed within the `caricaSemestre` procedure for this purpose. The following code snippet illustrates this:
+'''sql
+EXECUTE 'COPY sales FROM ''C:\Users\Public\'' + salescsv + ' WITH (format csv, delimiter '','', FORCE_NULL (onpromotion))';
+'''
+Similarly, the COPY command was utilized for the holiday_events table to populate it.
+Furthermore, within the procedure, data is also inserted into the data table. This table, as elaborated in the third section of the document, gathers temporal information with varying granularity present in both the sales and holiday_events tables. The insertion process is depicted as follows:
+'''sql
+INSERT INTO data (SELECT DISTINCT s.data AS Data, to_char(s.data, 'Day') AS Day, EXTRACT(WEEK FROM s.data) AS Week, EXTRACT(MONTH FROM s.data) AS Month, EXTRACT(YEAR FROM s.data) AS Year FROM sales AS s);
+'''
+'''sql
+UNION (SELECT DISTINCT h.data AS Data, to_char(h.data, 'Day') AS Day, EXTRACT(WEEK FROM h.data) AS Week, EXTRACT(MONTH FROM h.data) AS Month, EXTRACT(YEAR FROM h.data) AS Year FROM holiday_events AS h) ORDER BY 1;
+'''
+Since multiple holidays can correspond to a single date and a holiday can be celebrated on multiple dates, common dates from the holiday_events table are also inserted into data_holiday. The following code snippet outlines this procedure:
+'''sql
+INSERT INTO data_holiday SELECT d.data, h.id FROM data d JOIN holiday_events h ON d.data = h.data;
+'''
