@@ -45,6 +45,9 @@ Finally, it has been requested to evaluate the performance and execution times o
 ## Dimensional Fact Model
 
 Based on the provided data, there exists a distinct model centred around sales, with key metrics being the units sold (`UnitàVendute`) and a value indicating whether the sold item is on promotion or not (`InPromozione`).
+<p align="center">
+  <img src="https://github.com/cappadavide/db2-datawarehouse-prj/assets/70511599/c3261c99-d424-4c78-a663-8a4eed88870e" alt="DFM"/>
+</p>
 
 ### Hierarchies Overview
 
@@ -60,7 +63,7 @@ Based on the provided data, there exists a distinct model centred around sales, 
 These three hierarchies provide a comprehensive view of the exclusive sales model, incorporating temporal, product-related, and store-specific dimensions.
 
 ## Data Loading Process Overview
-As outlined in the requirements, data loading is mandated to occur on a semi-annual basis, totalling four semesters (two years). To achieve this, a separation process was implemented using the Python script `extractHalfYear`. This script takes input parameters such as the date to be segmented, the table, and the semester, generating the corresponding CSV file.
+As outlined in the requirements, data loading is mandated to occur on a semi-annual basis, totalling four semesters (two years). To achieve this, a separation process was implemented using the Python script `extractHalfYear.py`. This script takes input parameters such as the date to be segmented, the table, and the semester, generating the corresponding CSV file.
 Subsequently, the data from the CSV files about each semester needs to be loaded into the system. The `COPY` command was employed within the `caricaSemestre` procedure for this purpose. The following code snippet illustrates this:
 ```sql
 EXECUTE 'COPY sales FROM ''C:\Users\Public\'' + salescsv + ' WITH (format csv, delimiter '','', FORCE_NULL (onpromotion))';
