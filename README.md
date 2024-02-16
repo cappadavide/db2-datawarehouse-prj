@@ -24,14 +24,14 @@ The data loading has been requested to occur in blocks of six months.
 
 From the specifications, the following 8 slicings are outlined:
 
-1. Store, weekly day (e.g., Monday), year, product family
-2. State, weekly day, year, product family
-3. Store, week (e.g., 10th week), year, product family
-4. State, week (e.g., 10th week), year, product family
-5. Store, month, year, product family
-6. State, year, product family
-7. State, local holiday, month, year, product family (regular holidays - Sundays - plus local holidays)
-8. State, month, year, product family
+1. negozio (store), giorno settimanale (weekly day)(e.g., Monday), anno (year), famigliaprodotto (product family)
+2. stato (State), giornosettimanale, anno, famigliaprodotto
+3. negozio, settimana (ad es. decima settimana), anno, famigliaprodotto
+4. stato, settimana (ad es 10 settimana),anno, famigliaprodotto
+5. negozio, mese (month), anno, famigliaprodotto
+6. stato, anno, famigliaprodotto
+7. stato, festivolocale (local holiday), mese, anno, famigliaprodotto (regular holidays - Sundays - plus local holidays)
+8. stato, mese, anno, famigliaprodotto
 
 The comparison queries with the previous month/year are as follows:
 
@@ -64,7 +64,7 @@ These three hierarchies provide a comprehensive view of the exclusive sales mode
 
 ## Data Loading Process Overview
 As outlined in the requirements, data loading is mandated to occur on a semi-annual basis, totalling four semesters (two years). To achieve this, a separation process was implemented using the Python script `extractHalfYear.py`. This script takes input parameters such as the date to be segmented, the table, and the semester, generating the corresponding CSV file.
-Subsequently, the data from the CSV files about each semester needs to be loaded into the system. The `COPY` command was employed within the `caricaSemestre` procedure for this purpose. The following code snippet illustrates this:
+Subsequently, the data from the CSV files about each semester needs to be loaded into the system. The `COPY` command was employed within the `caricaSemestre.sql` procedure for this purpose. The following code snippet illustrates this:
 ```sql
 EXECUTE 'COPY sales FROM ''C:\Users\Public\'' + salescsv + ' WITH (format csv, delimiter '','', FORCE_NULL (onpromotion))';
 ```
