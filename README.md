@@ -92,3 +92,9 @@ In all queries, it was chosen to designate the 'Sales' table as the inner table 
 Evaluating the parameter 
 $$E_{reg}=N_{reg}(Sales)/N_{key}(Attribute)$$
 it was observed that the value exceeds the threshold (approximately 200). This indicates that the ideal index type is that of bitmaps, simulated by the BRIN indices. An additional advantage was gained by enabling HASH join which is enabled by default in PostgreSQL.
+
+### Authors
+[Giuseppina Russo](https://github.com/giusyrux)
+
+[cappadavide](https://github.com/cappadavide)
+
