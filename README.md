@@ -40,6 +40,7 @@ The comparison queries with the previous month/year are as follows:
 3. Products with decreased sales compared to the previous year (month, year, class)
 4. Products with decreased sales compared to the previous year (month, year, family)
 
+In addition, the utilization of materialized views has been investigated to enhance the accessibility of information required by four specific queries. These queries focus on retrieving data related to units sold and any potential decline in comparison to previous months/years. Materialized views have been employed to streamline the retrieval process and facilitate the analysis of relevant information.
 Finally, it has been requested to evaluate the performance and execution times of queries with and without index usage, as well as to assess storage space.
 
 ## Dimensional Fact Model
@@ -80,3 +81,14 @@ Since multiple holidays can correspond to a single date and a holiday can be cel
 ```sql
 INSERT INTO data_holiday SELECT d.data, h.id FROM data d JOIN holiday_events h ON d.data = h.data;
 ```
+
+## Index Evaluation
+
+One of the indices utilized within the entire system is BRIN, an acronym for "Block Range INdex". This index has been applied to the `data` and `store_nbr` attributes of the `Sales` table. These attributes were selected because they simulate BITMAP indices. Considering that the attribute on which they are applied recurs in almost all queries and belongs to the `Sales` table, which, due to its high number of rows, contains many duplicates, the BRIN indices significantly improve the query performance involving this table.
+Analysis of JOIN Operations
+
+In all queries, it was chosen to designate the 'Sales' table as the inner table on which to apply the index. This decision was based on the fact that the `Sales` table is the most populated relation (with millions of records) and remains unaltered within the query.
+
+Evaluating the parameter 
+$$E_{reg}=N_{reg}(Sales)/N_{key}(Attribute)$$
+it was observed that the value exceeds the threshold (approximately 200). This indicates that the ideal index type is that of bitmaps, simulated by the BRIN indices. An additional advantage was gained by enabling HASH join which is enabled by default in PostgreSQL.
